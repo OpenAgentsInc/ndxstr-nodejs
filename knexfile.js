@@ -1,3 +1,7 @@
+const dotenv = require('dotenv')
+
+dotenv.config()
+
 module.exports = {
   client: 'pg',
   connection: {
@@ -6,6 +10,10 @@ module.exports = {
     user: process.env.DB_USER ?? 'postgres',
     password: process.env.DB_PASSWORD ?? 'postgres',
     database: process.env.DB_NAME ?? 'ndxstr',
+    ssl: {
+      rejectUnauthorized: true,
+      ca: process.env.DB_SSL_CERT,
+    },
   },
   pool: { min: 4, max: 16 },
   seeds: {

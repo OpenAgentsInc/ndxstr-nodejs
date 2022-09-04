@@ -38,5 +38,3 @@ pool.sub({
     ],
   },
 })
-
-console.log('Did that work?')

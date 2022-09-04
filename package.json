@@ -2,7 +2,7 @@
   "name": "ndxstr",
   "version": "1.0.0",
   "description": "Nostr indexing node",
-  "main": "index.ts",
+  "main": "src/index.ts",
   "repository": "git@github.com:ArcadeCity/ndxstr.git",
   "author": "Christopher David <chris@arcade.city>",
   "license": "CC0-1.0",

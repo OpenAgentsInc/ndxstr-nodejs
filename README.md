@@ -1,8 +1,8 @@
 # ndxstr - Nostr indexing node
 
-Bootstrapping Nostr layer two with an indexing node.
+Bootstrapping Nostr's layer2 with an indexing node.
 
-ndxstr nodes are servers that pulls events from multiple known relays, storing them forever-ish and making available to clients via API.
+**ndxstr** nodes are servers that pull events from multiple known relays, storing them forever-ish and making available to clients via API.
 
 ## Why
 

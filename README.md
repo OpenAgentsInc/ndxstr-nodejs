@@ -2,6 +2,8 @@
 
 Bootstrapping Nostr layer two with an indexing node.
 
+ndxstr nodes are servers that pulls events from multiple known relays, storing them forever-ish and making available to clients via API.
+
 ## Why
 
 Modern applications may want:
@@ -10,10 +12,6 @@ Modern applications may want:
 - Receiving messages in a batch via API, not one at a time over a websocket
 - Fewer expensive cryptographic operations done client-side (e.g. trusting an indexer to validate events)
 - To retrieve large amounts of messages quickly+reliably via one API without caring about uptime/featuresets of multiple relays
-
-## Solution
-
-- A server that pulls events from all known relays, storing them forever-ish and making available to clients via API
 
 ## Stack
 
@@ -25,3 +23,8 @@ Modern applications may want:
 ## Risks
 
 - Centralization - Need to avoid Infura-ization
+
+## Related
+
+- [nostr-ts-relay](https://github.com/Cameri/nostr-ts-relay) - We reuse a lot of this code
+- [nostr](https://github.com/nostr-protocol/nostr) - Main nostr repo

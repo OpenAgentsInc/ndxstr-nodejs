@@ -12,17 +12,15 @@ const port = process.env.PORT || 8000
 const dbClient = getDbClient()
 
 app.get('/', (req, res) => {
-  res.send('Express + TypeScript Server')
+  res.send('ndxstr')
 })
 
 app.get('/test', (req, res) => {
   dbClient('events')
     .select('*')
     .then((events) => {
-      console.log(events)
       res.send(events)
     })
-  // res.send('Express + TypeScript Server')
 })
 
 app.listen(port, () => {

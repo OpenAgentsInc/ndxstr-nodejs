@@ -1,6 +1,14 @@
-import 'pg'
+import pg from 'pg'
 import 'pg-query-stream'
 import knex, { Knex } from 'knex'
+
+const dotenv = require('dotenv')
+
+dotenv.config()
+
+if (process.env.DB_SSL !== 'false') {
+  pg.defaults.ssl = true
+}
 
 const createDbConfig = (): Knex.Config => ({
   client: 'pg',

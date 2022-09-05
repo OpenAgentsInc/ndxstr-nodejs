@@ -58,12 +58,12 @@ export function relayConnect(url, onNotice = () => {}, onError = () => {}) {
       if (nextAttemptSeconds > 14400) {
         nextAttemptSeconds = 14400 // 4 hours
       }
-      console.log(`relay ${url} connection closed. reconnecting in ${nextAttemptSeconds} seconds.`)
+      console.log(`relay ${url} connection closed. reconnecting in 1 second.`)
       setTimeout(async () => {
         try {
           connect()
         } catch (err) {}
-      }, nextAttemptSeconds * 1000)
+      }, 1000) // nextAttemptSeconds *
 
       wasClosed = true
     }

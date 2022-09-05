@@ -3,6 +3,7 @@ import { relayPool } from './nostr/pool.js'
 import { Event } from './@types/event'
 import { insert } from './database/insert'
 import { prop } from 'ramda'
+import { sleep } from './utils/sleep'
 
 const express = require('express')
 const dotenv = require('dotenv')
@@ -33,6 +34,9 @@ app.listen(port, () => {
 const pool = relayPool()
 
 pool.addRelay('wss://relay.damus.io', { read: true, write: false })
+// pool.addRelay('wss://nostr-relay.untethr.me', { read: true, write: false })
+
+let eventsToProcess: Event[] = []
 
 async function onEvent(event, relay) {
   // console.log(`got an event from ${relay} which is already validated.`, event)
@@ -49,20 +53,44 @@ async function onEvent(event, relay) {
     // [EventDelegatorMetadataKey]: event[EventDelegatorMetadataKey],
   }
 
-  const rowCount = await insert(normalizedEvent).then(prop('rowCount') as () => number)
-  console.log(`Saved ${rowCount} rows`)
+  eventsToProcess.push(normalizedEvent)
+  // const rowCount = await insert(normalizedEvent).then(prop('rowCount') as () => number)
+  // console.log(`Saved ${rowCount} rows - ${event.id}`)
 }
 
+// while (true) {
+
+//   console.log('eventsToProcess', eventsToProcess.length)
+// }
+
 // @ts-ignore
-pool.sub({
+const sub = pool.sub({
   cb: onEvent,
   filter: {
-    kinds: [41],
-    // ids: [
-    //   'f06a690997a1b7d8283c90a7224eb8b7fe96b7c3d3d8cc7b2e7f743532c02b42',
-    //   'cc7ace95dcd091e8b2822b4c3f71dce88aece2adff66eaaea362caa8da8563b7',
-    //   '6c1ab7e5f8cf33874e5b9d85e000c0683d3133ec8294a5009d2f38854aceafb0',
-    //   '9cb8bf059ae86df40407cfa5871c2111b09d3fb2c85c5be67306fcf6b3bab729',
-    // ],
+    kinds: [40, 41, 42, 43, 44],
+    until: 1662316827,
+    since: 1661721077,
   },
 })
+
+setTimeout(() => {
+  sub.unsub()
+  console.log('Unsubscribed')
+}, 5000)
+
+const forLoop = async () => {
+  for (let i = 0; i < 15000; i++) {
+    await sleep(25)
+    if (eventsToProcess.length === 0) return
+    const event = eventsToProcess.pop()
+    if (!event) return
+    const rowCount = await insert(event).then(prop('rowCount') as () => number)
+    console.log(
+      `${i} - Saved ${rowCount} rows - ${eventsToProcess.length} events left - ${event.id}`
+    )
+  }
+}
+
+setTimeout(() => {
+  forLoop()
+}, 2000)

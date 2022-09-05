@@ -68,8 +68,10 @@ const sub = pool.sub({
   cb: onEvent,
   filter: {
     kinds: [40, 41, 42, 43, 44],
-    until: 1662316827,
-    since: 1661721077,
+    // until: 1661721077,
+    // until: 1662316827,
+    // since: 1662316827,
+    // since: 1661721077,
   },
 })
 

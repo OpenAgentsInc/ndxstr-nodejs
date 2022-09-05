@@ -22,6 +22,7 @@ app.get('/', (req, res) => {
 app.get('/test', (req, res) => {
   dbClient('events')
     .select('*')
+    .limit(100)
     .then((events) => {
       res.send(events)
     })
@@ -34,11 +35,11 @@ app.listen(port, () => {
 const pool = relayPool()
 
 pool.addRelay('wss://relay.damus.io', { read: true, write: false })
-// pool.addRelay('wss://nostr-relay.untethr.me', { read: true, write: false })
 
 let eventsToProcess: Event[] = []
 
 async function onEvent(event, relay) {
+  // console.log(`Received event ${event.id} from ${relay}`)
   const normalizedEvent: Event = {
     id: event.id,
     pubkey: event.pubkey,
@@ -52,32 +53,22 @@ async function onEvent(event, relay) {
 }
 
 // @ts-ignore
-const sub = pool.sub({
+pool.sub({
   cb: onEvent,
   filter: {
     kinds: [40, 41, 42, 43, 44],
-    since: 1662370913,
+    since: 1662368190, // TODO: make this dynamic based on last event in db
   },
 })
 
-setTimeout(() => {
-  sub.unsub()
-  console.log('Unsubscribed')
-}, 5000)
-
-const forLoop = async () => {
-  for (let i = 0; i < 15000; i++) {
-    await sleep(25)
-    if (eventsToProcess.length === 0) return
-    const event = eventsToProcess.pop()
-    if (!event) return
-    const rowCount = await insert(event).then(prop('rowCount') as () => number)
-    console.log(
-      `${i} - Saved ${rowCount} rows - ${eventsToProcess.length} events left - ${event.id}`
-    )
-  }
+const processLoop = async () => {
+  if (eventsToProcess.length === 0) return
+  const event = eventsToProcess.pop()
+  if (!event) return
+  const rowCount = await insert(event).then(prop('rowCount') as () => number)
+  console.log(`Saved ${rowCount} rows - ${eventsToProcess.length} events left - ${event.id}`)
 }
 
-setTimeout(() => {
-  forLoop()
-}, 2000)
+setInterval(() => {
+  processLoop()
+}, 100)

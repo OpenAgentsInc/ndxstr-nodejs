@@ -1,6 +1,7 @@
 import { always, applySpec, ifElse, is, pipe, prop, propSatisfies } from 'ramda'
 import { EventDelegatorMetadataKey } from '../constants/base'
 import { toBuffer, toJSON } from '../utils/transform'
+import { Event } from '../@types/event'
 import { getDbClient } from './client'
 
 const dbClient = getDbClient()

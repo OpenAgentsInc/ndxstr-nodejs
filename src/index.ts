@@ -39,9 +39,6 @@ pool.addRelay('wss://relay.damus.io', { read: true, write: false })
 let eventsToProcess: Event[] = []
 
 async function onEvent(event, relay) {
-  // console.log(`got an event from ${relay} which is already validated.`, event)
-  // console.log(`got event ${event.id} from ${relay} `)
-
   const normalizedEvent: Event = {
     id: event.id,
     pubkey: event.pubkey,
@@ -50,28 +47,16 @@ async function onEvent(event, relay) {
     tags: event.tags,
     content: event.content,
     sig: event.sig,
-    // [EventDelegatorMetadataKey]: event[EventDelegatorMetadataKey],
   }
-
   eventsToProcess.push(normalizedEvent)
-  // const rowCount = await insert(normalizedEvent).then(prop('rowCount') as () => number)
-  // console.log(`Saved ${rowCount} rows - ${event.id}`)
 }
-
-// while (true) {
-
-//   console.log('eventsToProcess', eventsToProcess.length)
-// }
 
 // @ts-ignore
 const sub = pool.sub({
   cb: onEvent,
   filter: {
     kinds: [40, 41, 42, 43, 44],
-    // until: 1661721077,
-    // until: 1662316827,
-    // since: 1662316827,
-    // since: 1661721077,
+    since: 1662370913,
   },
 })
 

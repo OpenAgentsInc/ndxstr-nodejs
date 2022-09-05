@@ -19,6 +19,27 @@ app.get('/', (req, res) => {
   res.send('ndxstr')
 })
 
+app.get('/chat', (req, res) => {
+  dbClient('events')
+    .select('*')
+    .whereJsonObject('event_tags', [
+      ['e', 'f06a690997a1b7d8283c90a7224eb8b7fe96b7c3d3d8cc7b2e7f743532c02b42'],
+    ])
+    .orWhereJsonObject('event_tags', [
+      ['e', 'cc7ace95dcd091e8b2822b4c3f71dce88aece2adff66eaaea362caa8da8563b7'],
+    ])
+    .orWhereJsonObject('event_tags', [
+      ['e', '6c1ab7e5f8cf33874e5b9d85e000c0683d3133ec8294a5009d2f38854aceafb0'],
+    ])
+    .orWhereJsonObject('event_tags', [
+      ['e', '9cb8bf059ae86df40407cfa5871c2111b09d3fb2c85c5be67306fcf6b3bab729'],
+    ])
+    .orderBy('event_created_at', 'desc')
+    .then((events) => {
+      res.send(events)
+    })
+})
+
 app.get('/test', (req, res) => {
   dbClient('events')
     .select('*')

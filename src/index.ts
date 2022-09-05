@@ -1,5 +1,8 @@
 import { getDbClient } from './database/client.js'
 import { relayPool } from './nostr/pool.js'
+import { Event } from './@types/event'
+import { insert } from './database/insert'
+import { prop } from 'ramda'
 
 const express = require('express')
 const dotenv = require('dotenv')
@@ -31,20 +34,35 @@ const pool = relayPool()
 
 pool.addRelay('wss://relay.damus.io', { read: true, write: false })
 
-function onEvent(event, relay) {
-  console.log(`got an event from ${relay} which is already validated.`, event)
+async function onEvent(event, relay) {
+  // console.log(`got an event from ${relay} which is already validated.`, event)
+  // console.log(`got event ${event.id} from ${relay} `)
+
+  const normalizedEvent: Event = {
+    id: event.id,
+    pubkey: event.pubkey,
+    created_at: event.created_at,
+    kind: event.kind,
+    tags: event.tags,
+    content: event.content,
+    sig: event.sig,
+    // [EventDelegatorMetadataKey]: event[EventDelegatorMetadataKey],
+  }
+
+  const rowCount = await insert(normalizedEvent).then(prop('rowCount') as () => number)
+  console.log(`Saved ${rowCount} rows`)
 }
 
 // @ts-ignore
 pool.sub({
   cb: onEvent,
   filter: {
-    kinds: [40],
-    ids: [
-      'f06a690997a1b7d8283c90a7224eb8b7fe96b7c3d3d8cc7b2e7f743532c02b42',
-      'cc7ace95dcd091e8b2822b4c3f71dce88aece2adff66eaaea362caa8da8563b7',
-      '6c1ab7e5f8cf33874e5b9d85e000c0683d3133ec8294a5009d2f38854aceafb0',
-      '9cb8bf059ae86df40407cfa5871c2111b09d3fb2c85c5be67306fcf6b3bab729',
-    ],
+    kinds: [41],
+    // ids: [
+    //   'f06a690997a1b7d8283c90a7224eb8b7fe96b7c3d3d8cc7b2e7f743532c02b42',
+    //   'cc7ace95dcd091e8b2822b4c3f71dce88aece2adff66eaaea362caa8da8563b7',
+    //   '6c1ab7e5f8cf33874e5b9d85e000c0683d3133ec8294a5009d2f38854aceafb0',
+    //   '9cb8bf059ae86df40407cfa5871c2111b09d3fb2c85c5be67306fcf6b3bab729',
+    // ],
   },
 })

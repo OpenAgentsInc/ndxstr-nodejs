@@ -22,7 +22,8 @@ app.get('/', (req, res) => {
 app.get('/test', (req, res) => {
   dbClient('events')
     .select('*')
-    .limit(100)
+    .where('event_created_at', '>', 1662309482)
+    .orderBy('event_created_at', 'desc')
     .then((events) => {
       res.send(events)
     })

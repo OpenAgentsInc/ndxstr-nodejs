@@ -40,15 +40,13 @@ app.get('/chat', (req, res) => {
     })
 })
 
-app.get('/test', (req, res) => {
-  dbClient('events')
+app.get('/test', async (req, res) => {
+  const events = await dbClient('events')
     .select('*')
     .where('event_created_at', '>', 1662309482)
-    .orderBy('event_created_at', 'desc')
-    .then((events) => {
-      res.send(events)
-    })
-})
+    .orderBy('event_created_at', 'desc');
+  res.send(events);
+});</code>
 
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`)
